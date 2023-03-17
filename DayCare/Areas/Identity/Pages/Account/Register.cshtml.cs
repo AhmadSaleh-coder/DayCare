@@ -35,7 +35,6 @@ namespace DayCare.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _db;
-        private readonly IConfiguration _configuration;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
@@ -44,8 +43,7 @@ namespace DayCare.Areas.Identity.Pages.Account
             ILogger<RegisterModel> logger,
             IEmailSender emailSender, 
             RoleManager<IdentityRole> roleManger,
-            ApplicationDbContext db,
-            IConfiguration configuration               
+            ApplicationDbContext db
             )
 
 
@@ -58,7 +56,6 @@ namespace DayCare.Areas.Identity.Pages.Account
             _emailSender = emailSender;
             _roleManager = roleManger;
             _db = db;
-            _configuration = configuration;
         }
 
 
@@ -145,8 +142,7 @@ namespace DayCare.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-            var emailSender = new EmailSender(_configuration);
-            emailSender.SendEmailAsync("abcaccb@mailinator.com", "ab", "ab");
+           
 
         }
 

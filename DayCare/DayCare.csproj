@@ -24,8 +24,4 @@
     <ProjectReference Include="..\DayCare.Utility\DayCare.Utility.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Areas\Parent\Controllers\" />
-  </ItemGroup>
-
 </Project>

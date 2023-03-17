@@ -3,6 +3,7 @@ using MailKit.Security;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
+using MimeKit.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace DayCare.Utility
             email.From.Add(MailboxAddress.Parse(From));
             email.To.Add(MailboxAddress.Parse(To));
             email.Subject = subject;
-            email.Body = new TextPart(htmlMessage)
+            email.Body = new TextPart(TextFormat.Html)
             {
                 Text = htmlMessage,
             };

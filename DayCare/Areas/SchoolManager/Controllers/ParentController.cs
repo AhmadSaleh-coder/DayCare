@@ -1,7 +1,11 @@
 ﻿using BulkyBook.Models;
 using DayCare.DataAccess.Data;
+using DayCare.Models;
+using DayCare.Utility;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Bcpg;
+using System.Security.Claims;
 
 namespace DayCare.Areas.SchoolManager.Controllers
 {
@@ -13,12 +17,15 @@ namespace DayCare.Areas.SchoolManager.Controllers
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _db;
+        private readonly IConfiguration _configuration;
 
         public ParentController(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             RoleManager<IdentityRole> roleManger,
-            ApplicationDbContext db
+            ApplicationDbContext db,
+            IConfiguration configuration
+
             )
 
 
@@ -28,12 +35,38 @@ namespace DayCare.Areas.SchoolManager.Controllers
             _emailStore = GetEmailStore();
             _roleManager = roleManger;
             _db = db;
+            _configuration = configuration;
         }
      
         public IActionResult Index()
         {
             return View();
         }
+
+        public IActionResult Create()
+        {
+
+           
+            return View();
+        }
+        [HttpPost]
+        public IActionResult Create(ParentLink parentLink)
+        {   
+           string UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int schoolId = _db.Users_Schools.FirstOrDefault(u => u.UserId == UserId).SchoolId;
+            parentLink.SchoolId = schoolId;
+            parentLink.RandomLink= Guid.NewGuid().ToString();
+            _db.Add(parentLink);
+            _db.SaveChanges();
+
+            var emailSender = new EmailSender(_configuration);
+            emailSender.SendEmailAsync(parentLink.SendTo, "ab", $"<a href='https://localhost:44365/Parent/Parent/Create?token={parentLink.RandomLink}'> Register </a>");
+
+            return View(nameof(Index));
+        }
+
+
+
 
 
 
