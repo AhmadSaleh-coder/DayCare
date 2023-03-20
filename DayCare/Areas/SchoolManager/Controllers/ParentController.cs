@@ -3,6 +3,7 @@ using DayCare.DataAccess.Data;
 using DayCare.Models;
 using DayCare.Models.ViewModels;
 using DayCare.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using System.Security.Claims;
 namespace DayCare.Areas.SchoolManager.Controllers
 {
     [Area("SchoolManager")]
+    [Authorize(Roles ="SchoolManager")]
     public class ParentController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

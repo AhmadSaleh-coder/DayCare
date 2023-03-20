@@ -33,7 +33,10 @@ namespace DayCare.Areas.Parent.Controllers
             _roleManager = roleManger;
             _db = db;
         }
-       
+       public IActionResult Index()
+        {
+            return View();
+        }
 
         public IActionResult Create(string? token)
         {   if (token == null)
@@ -84,7 +87,7 @@ namespace DayCare.Areas.Parent.Controllers
                 _db.SaveChangesAsync();
             }
 
-            return View();
+            return RedirectToAction("Index");
         }
 
         private ApplicationUser CreateUser()
