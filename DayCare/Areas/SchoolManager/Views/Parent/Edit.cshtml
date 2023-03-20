@@ -1,0 +1,29 @@
+﻿@using DayCare.Models.ViewModels;
+@model ParentVM
+<form method="post">
+
+    <input asp-for="parentId" hidden />
+
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">Edit Parent</h2>
+            <hr />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="PhoneNumber"></label>
+            <input asp-for="PhoneNumber" class="form-control" />
+        </div>
+   
+        <button type="submit" class="btn btn-primary" style="width:150px">Update</button>
+        <a asp-area="SchoolManager" asp-controller="Parent" asp-action="Index" class="btn btn-secondary" style="width:150px">Back to list</a>
+    </div>
+</form>

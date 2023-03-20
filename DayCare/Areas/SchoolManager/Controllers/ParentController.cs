@@ -1,10 +1,13 @@
 ﻿using BulkyBook.Models;
 using DayCare.DataAccess.Data;
 using DayCare.Models;
+using DayCare.Models.ViewModels;
 using DayCare.Utility;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Bcpg;
+using System.ComponentModel;
 using System.Security.Claims;
 
 namespace DayCare.Areas.SchoolManager.Controllers
@@ -40,7 +43,11 @@ namespace DayCare.Areas.SchoolManager.Controllers
      
         public IActionResult Index()
         {
-            return View();
+            string UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int schoolId = _db.Users_Schools.FirstOrDefault(u => u.UserId == UserId).SchoolId;
+            IEnumerable<User_School> objParentsList = _db.Users_Schools.Include("ApplicationUser").Include("School").Where(u => u.Role == "Parent" && u.SchoolId == schoolId).Where(u => u.ApplicationUser.isDeleted == null).ToList();
+
+            return View(objParentsList);
         }
 
         public IActionResult Create()
@@ -62,20 +69,86 @@ namespace DayCare.Areas.SchoolManager.Controllers
             var emailSender = new EmailSender(_configuration);
             emailSender.SendEmailAsync(parentLink.SendTo, "ab", $"<a href='https://localhost:44365/Parent/Parent/Create?token={parentLink.RandomLink}'> Register </a>");
 
-            return View(nameof(Index));
+            return View("EmailCheck");
         }
 
+        public IActionResult Edit(string? id)
+        {
 
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var parentFromDb = _db.ApplicationUsers.FirstOrDefault(u => u.Id == id);
 
+            ParentVM parentVM = new()
+            {
+                Email = parentFromDb.Email,
+                Name = parentFromDb.FullName,
+                PhoneNumber = parentFromDb.PhoneNumber,
+                parentId = parentFromDb.Id
+            };
 
+            if (parentFromDb == null)
+            {
+                return NotFound();
+            }
 
+            return View(parentVM);
+        }
 
+        //Post
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(ParentVM obj)
+        {
+            ApplicationUser parentFromDb = _userManager.FindByIdAsync(obj.parentId).GetAwaiter().GetResult();
+            await _userStore.SetUserNameAsync(parentFromDb, obj.Email, CancellationToken.None);
+            await _emailStore.SetEmailAsync(parentFromDb, obj.Email, CancellationToken.None);
 
+            parentFromDb.FullName = obj.Name;
+            parentFromDb.PhoneNumber = obj.PhoneNumber;
 
+            await _userManager.UpdateAsync(parentFromDb);
+            return RedirectToAction("Index");
+        }
 
+        //Get
+        public IActionResult Delete(string? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var parentFromDb = _db.ApplicationUsers.FirstOrDefault(u => u.Id == id);
+            if (parentFromDb == null)
+            {
+                return NotFound();
+            }
 
+            ParentVM parentVM = new()
+            {
+                Name = parentFromDb.FullName,
+                Email = parentFromDb.Email,
+            };
 
+            return View(parentVM);
+        }
 
+        //POST
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeletePost(string? id) {
+            var obj = _db.ApplicationUsers.FirstOrDefault(u => u.Id==id);
+            if (obj == null)
+            {
+                return NotFound();
+            }
+            obj.isDeleted = DateTime.Now.ToLocalTime();
+            _db.ApplicationUsers.Update(obj);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
+        }
 
         private ApplicationUser CreateUser()
         {

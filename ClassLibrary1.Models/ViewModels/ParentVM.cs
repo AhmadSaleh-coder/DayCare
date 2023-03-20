@@ -10,6 +10,8 @@ namespace DayCare.Models.ViewModels
 {
     public class ParentVM
     {
+        public string parentId { get; set; }
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
