@@ -124,7 +124,7 @@ namespace DayCare.DataAccess.Migrations
                     b.ToTable("Bundles");
                 });
 
-            modelBuilder.Entity("DayCare.Models.ParentLink", b =>
+            modelBuilder.Entity("DayCare.Models.RegisterLink", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -133,6 +133,10 @@ namespace DayCare.DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("RandomLink")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -150,7 +154,7 @@ namespace DayCare.DataAccess.Migrations
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("ParentLinks");
+                    b.ToTable("RegisterLinks");
                 });
 
             modelBuilder.Entity("DayCare.Models.School", b =>
@@ -333,7 +337,7 @@ namespace DayCare.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DayCare.Models.ParentLink", b =>
+            modelBuilder.Entity("DayCare.Models.RegisterLink", b =>
                 {
                     b.HasOne("DayCare.Models.School", "School")
                         .WithMany()

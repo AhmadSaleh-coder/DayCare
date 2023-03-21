@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.Remoting;
+using System.Security.Claims;
 
 namespace DayCare.Areas.Admin.Controllers
 {
@@ -64,13 +65,17 @@ namespace DayCare.Areas.Admin.Controllers
             await _userStore.SetUserNameAsync(user, obj.Email, CancellationToken.None);
             await _emailStore.SetEmailAsync(user, obj.Email, CancellationToken.None);
             user.FullName = obj.Name;
+
             var result = await _userManager.CreateAsync(user, obj.Password);
 
             if (result.Succeeded)
             {
+                await _userManager.AddToRoleAsync(user, "SchoolManager");
               /*  obj.School.OwnerId= user.Id;*/
                 _db.Schools.Add(obj.School);
                 _db.SaveChanges();
+                await _userManager.AddClaimAsync(user, new Claim("schoolId", obj.School.Id.ToString()));
+
                 return RedirectToAction("Index");
             }
                 return View();

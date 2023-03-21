@@ -19,7 +19,7 @@ namespace DayCare.DataAccess.Data
         public DbSet<School> Schools { get; set; }
         public DbSet<Bundle> Bundles { get; set; }
         public DbSet<User_School> Users_Schools { get; set; }
-        public DbSet<ParentLink> ParentLinks { get; set; }
+        public DbSet<RegisterLink> RegisterLinks { get; set; }
 
     }
 

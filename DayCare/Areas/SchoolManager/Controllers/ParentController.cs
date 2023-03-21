@@ -45,8 +45,7 @@ namespace DayCare.Areas.SchoolManager.Controllers
      
         public IActionResult Index()
         {
-            string UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            int schoolId = _db.Users_Schools.FirstOrDefault(u => u.UserId == UserId).SchoolId;
+            int schoolId = Convert.ToInt32(User.FindFirstValue("schoolId"));
             IEnumerable<User_School> objParentsList = _db.Users_Schools.Include("ApplicationUser").Include("School").Where(u => u.Role == "Parent" && u.SchoolId == schoolId).Where(u => u.ApplicationUser.isDeleted == null).ToList();
 
             return View(objParentsList);
@@ -59,12 +58,13 @@ namespace DayCare.Areas.SchoolManager.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(ParentLink parentLink)
+        public IActionResult Create(RegisterLink parentLink)
         {   
-           string UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            int schoolId = _db.Users_Schools.FirstOrDefault(u => u.UserId == UserId).SchoolId;
+           int schoolId =Convert.ToInt32(User.FindFirstValue("schoolId"));
+         
             parentLink.SchoolId = schoolId;
             parentLink.RandomLink= Guid.NewGuid().ToString();
+            parentLink.Role = "Parent";
             _db.Add(parentLink);
             _db.SaveChanges();
 

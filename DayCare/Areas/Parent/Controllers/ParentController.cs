@@ -44,7 +44,7 @@ namespace DayCare.Areas.Parent.Controllers
                 return NotFound();
             }
 
-            ParentLink parentLink = _db.ParentLinks.FirstOrDefault(u => u.RandomLink == token);
+            RegisterLink parentLink = _db.RegisterLinks.FirstOrDefault(u => u.RandomLink == token);
 
             if (parentLink == null || parentLink.Status == "InValid")
             {
@@ -74,7 +74,7 @@ namespace DayCare.Areas.Parent.Controllers
             if(result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(parent, "Parent");
-                ParentLink parentLink = _db.ParentLinks.FirstOrDefaultAsync(u => u.RandomLink == obj.Token).GetAwaiter().GetResult();
+                RegisterLink parentLink = _db.RegisterLinks.FirstOrDefaultAsync(u => u.RandomLink == obj.Token).GetAwaiter().GetResult();
                 parentLink.Status = "InValid";
                 
 

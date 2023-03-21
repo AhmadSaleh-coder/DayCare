@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DayCare.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230316111816_Add parentLinks to Database")]
-    partial class AddparentLinkstoDatabase
+    [Migration("20230320140524_Add Role To Register Links")]
+    partial class AddRoleToRegisterLinks
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -126,34 +126,39 @@ namespace DayCare.DataAccess.Migrations
                     b.ToTable("Bundles");
                 });
 
-            modelBuilder.Entity("DayCare.Models.ParentLink", b =>
+            modelBuilder.Entity("DayCare.Models.RegisterLink", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("RandomLink")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("SchoolId")
                         .HasColumnType("int");
 
                     b.Property<string>("SendTo")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("ParentLinks");
+                    b.ToTable("RegisterLinks");
                 });
 
             modelBuilder.Entity("DayCare.Models.School", b =>
@@ -336,13 +341,21 @@ namespace DayCare.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DayCare.Models.ParentLink", b =>
+            modelBuilder.Entity("DayCare.Models.RegisterLink", b =>
                 {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", "IdentityRole")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DayCare.Models.School", "School")
                         .WithMany()
                         .HasForeignKey("SchoolId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("IdentityRole");
 
                     b.Navigation("School");
                 });

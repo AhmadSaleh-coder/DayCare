@@ -37,9 +37,8 @@ namespace DayCare.Areas.SchoolManager.Controllers
             _db = db;
         }
         public IActionResult Index()
-        { 
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            int schoolId = _db.Users_Schools.FirstOrDefault(u => u.UserId == userId).SchoolId;
+        {
+            int schoolId = Convert.ToInt32(User.FindFirstValue("schoolId"));
             IEnumerable<User_School> objTeacherssList = _db.Users_Schools.Include("ApplicationUser").Include("School").Where(u=>u.Role == "Teacher" && u.SchoolId== schoolId).Where(u=>u.ApplicationUser.isDeleted == null).ToList();
             return View(objTeacherssList);
         }
@@ -66,15 +65,17 @@ namespace DayCare.Areas.SchoolManager.Controllers
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(teacher, "Teacher");
-                string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                int schoolId = _db.Users_Schools.FirstOrDefaultAsync(u => u.UserId == userId).GetAwaiter().GetResult().SchoolId;
-                 await _db.Users_Schools.AddAsync(new User_School() {
+                int schoolId = Convert.ToInt32(User.FindFirstValue("schoolId"));
+
+                await _db.Users_Schools.AddAsync(new User_School() {
                    UserId= teacher.Id,
                    SchoolId = schoolId,
                    Role = "Teacher"
                  });
                 
                 await _db.SaveChangesAsync();
+                await _userManager.AddClaimAsync(teacher, new Claim("schoolId", schoolId.ToString()));
+
                 return RedirectToAction("Index");
             }
             return View();
